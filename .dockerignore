@@ -1,0 +1,47 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Git
+.git
+.gitignore
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+logs
+
+# Tests
+coverage
+test
+
+# Environment files (las variables se inyectan en Cloud Run)
+environments/*/.env
+.env
+.env.*
+
+# Documentation
+*.md
+DOCKER.md
+DEPLOYMENT-GUIDE.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+docker-scripts.sh
+nginx.conf
+temp_schema_backup.txt
+cloudbuild.yaml
+

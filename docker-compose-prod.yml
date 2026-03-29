@@ -1,0 +1,27 @@
+services:
+  databook-prod-back:
+    container_name: databook-prod-back
+    image: databook-prod-back:latest
+    restart: always
+    build:
+      context: .
+      dockerfile: ./environments/prod/Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=50068
+      - DATABASE_URL=postgresql://postgres:pwdeeSrhaF4t344P@10.128.0.23:54321/app-alfa-databook?schema=public
+      - URL_DATABOOK=${URL_DATABOOK}
+      - API_KEY_DATABOOK=${API_KEY_DATABOOK}
+    volumes:
+      - databook-prod-back-data:/app/uploads
+    ports:
+      - '50068:50068'
+    networks:
+      - master_network
+
+networks:
+  master_network:
+    external: true
+
+volumes:
+  databook-prod-back-data:

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "transit_data" ADD COLUMN     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;

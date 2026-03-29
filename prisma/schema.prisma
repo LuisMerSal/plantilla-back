@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  firstName     String
+  lastName      String
+  dni           String         @unique
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  roleId        String?
+  role          Role?          @relation(fields: [roleId], references: [id])
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+
+  @@map("roles")
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("api_keys")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model DatabookConsult {
+  id                  String        @id @default(uuid())
+  identityNumber      String        @map("identity_number")
+  fullname            String        @map("full_name")
+  sexo                String        @map("sexo")
+  edad                Int           @map("edad")
+  civilStatus         String        @map("civil_status")
+  cargas              Int           @map("cargas")
+  dependenceName      String        @map("dependence_name")
+  dependenceStart     DateTime      @map("dependence_start")
+  dependencePosition  String        @map("dependence_position")
+  dependenceAddress   String        @map("dependence_address")
+  dependenceRango1    Float         @map("dependence_rango1")
+  dependenceRango2    Float         @map("dependence_rango2")
+  nacionalidad        String?       @map("nacionalidad")
+  conyuge             String?       @map("conyuge")
+  calleDomicilio      String?       @map("calle_domicilio")
+  numeracionDomicilio String?       @map("numeracion_domicilio")
+  nombreMadre         String?       @map("nombre_madre")
+  nombrePadre         String?       @map("nombre_padre")
+  lugarNacimiento     String?       @map("lugar_nacimiento")
+  instruccion         String?       @map("instruccion")
+  profesion           String?       @map("profesion")
+  cupo                Float?        @map("cupo")
+  cuota               Float?        @map("cuota")
+  profileCredit       Float?        @map("profile_credit")
+  shawdonQuota        Float?        @map("shawdon_quota")
+  //datos de contacto
+  telefono1           String?       @map("telefono1")
+  telefono2           String?       @map("telefono2")
+  telefono3           String?       @map("telefono3")
+  correo1             String?       @map("correo1")
+  correo2             String?       @map("correo2")
+  grupo               String?       @map("grupo")
+  isActive            Boolean       @default(true) @map("is_active")
+  isEnabled           Boolean       @default(true) @map("is_enabled")
+  updatedBy           String?       @map("updated_by") @db.VarChar(100)
+  createdBy           String?       @map("created_by") @db.VarChar(100)
+  deletedBy           String?       @map("deleted_by") @db.VarChar(100)
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt           DateTime?     @map("deleted_at") @db.Timestamptz
+  rucData             RucData[]
+  penalData           PenalData[]
+  transitDatas        TransitData[]
+  vehicleDatas        VehicleData[]
+
+  @@map("databook_consults")
+}
+
+model VehicleData {
+  id                 String          @id @default(uuid())
+  databookConsultId  String          @map("databook_consult_id")
+  identityNumber     String          @map("identity_number")
+  success            Boolean         @default(false) @map("success")
+  totalVehiculos     Int             @default(0) @map("total_vehiculos")
+  vehiculosConsultados Int           @default(0) @map("vehiculos_consultados")
+  limiteConsultas    Int             @default(0) @map("limite_consultas")
+  payload            Json?           @map("payload")
+  error              String?         @map("error")
+  isActive           Boolean         @default(true) @map("is_active")
+  createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  databookConsult    DatabookConsult @relation(fields: [databookConsultId], references: [id], onDelete: Cascade)
+
+  @@index([identityNumber])
+  @@index([databookConsultId])
+  @@map("vehicle_data")
+}
+
+model RucData {
+  id                          String          @id @default(uuid())
+  databookConsultId           String          @map("databook_consult_id")
+  numeroRuc                   String          @map("numero_ruc")
+  razonSocial                 String          @map("razon_social")
+  estadoContribuyenteRuc      String          @map("estado_contribuyente_ruc")
+  actividadEconomicaPrincipal String          @map("actividad_economica_principal") @db.Text
+  tipoContribuyente           String          @map("tipo_contribuyente")
+  regimen                     String          @map("regimen")
+  categoria                   String?         @map("categoria")
+  obligadoLlevarContabilidad  String          @map("obligado_llevar_contabilidad")
+  agenteRetencion             String          @map("agente_retencion")
+  contribuyenteEspecial       String          @map("contribuyente_especial")
+  fechaInicioActividades      DateTime?       @map("fecha_inicio_actividades") @db.Timestamptz
+  fechaCese                   DateTime?       @map("fecha_cese") @db.Timestamptz
+  fechaReinicioActividades    DateTime?       @map("fecha_reinicio_actividades") @db.Timestamptz
+  fechaActualizacion          DateTime?       @map("fecha_actualizacion") @db.Timestamptz
+  motivoCancelacionSuspension String?         @map("motivo_cancelacion_suspension")
+  contribuyenteFantasma       String          @map("contribuyente_fantasma")
+  transaccionesInexistente    String          @map("transacciones_inexistente")
+  clasificacionMiPyme         String?         @map("clasificacion_mi_pyme")
+  establecimientos            Json?           @map("establecimientos")
+  representantesLegales       Json?           @map("representantes_legales")
+  error                       String?         @map("error")
+  isActive                    Boolean         @default(true) @map("is_active")
+  createdAt                   DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                   DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  databookConsult             DatabookConsult @relation(fields: [databookConsultId], references: [id], onDelete: Cascade)
+
+  @@index([numeroRuc])
+  @@index([databookConsultId])
+  @@map("ruc_data")
+}
+
+model PenalData {
+  id                String          @id @default(uuid())
+  databookConsultId String          @map("databook_consult_id")
+  identityNumber    String          @map("identity_number")
+  denuncias         Json?           @map("denuncias")
+  total             Int             @default(0) @map("total")
+  error             String?         @map("error")
+  isActive          Boolean         @default(true) @map("is_active")
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  databookConsult   DatabookConsult @relation(fields: [databookConsultId], references: [id], onDelete: Cascade)
+
+  @@index([identityNumber])
+  @@index([databookConsultId])
+  @@map("penal_data")
+}
+
+model TransitData {
+  id         String   @id @default(uuid())
+  idContrato String?  @map("id_contrato")
+  placa      String?  @map("placa")
+  idPersona  String?  @map("id_persona")
+  mensaje    String?  @map("mensaje")
+  finesPaid  Json?    @map("fines_paid")
+  fines      Json?    @map("fines_unpaid")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  databookConsultId String          @map("databook_consult_id")
+  databookConsult   DatabookConsult @relation(fields: [databookConsultId], references: [id], onDelete: Cascade)
+
+  @@index([idContrato])
+  @@index([databookConsultId])
+  @@map("transit_data")
+}
+
+model Transaction {
+  id           String   @id @default(uuid())
+  type         String? // "credit_check", "data_update", etc.
+  status       String? // "pending", "completed", "failed", etc.
+  message      String?
+  datajson     Json?    @map("data_json")
+  successCount Int?     @map("success_count")
+  errorCount   Int?     @map("error_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+  isActive     Boolean? @default(true) @map("is_active")
+  isEnabled    Boolean? @default(true) @map("is_enabled")
+
+  @@map("transactions")
+}
+
+model Factor {
+  id              String   @id @default(uuid())
+  scoreBuroMinimo Int      @map("score_buro_minimo")
+  scoreBuroMaximo Int      @map("score_buro_maximo")
+  factorPromedio  Float    @map("factor_promedio")
+  factorSombra    Float    @map("factor_sombra")
+  type            String // "con_score" o "sin_score"
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("factors")
+}
