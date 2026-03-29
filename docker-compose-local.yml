@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  ecommerce-back-local:
+    container_name: ecommerce-back-local
+    image: ecommerce-back-local
+    restart: always
+    build:
+      context: .
+      dockerfile: ./environment/local/Dockerfile
+    volumes:
+      - ecommerce-back-local-data:/app/uploads
+    ports:
+      - '40028:40028'
+    networks:
+      - master_network
+
+networks:
+  master_network:
+    external: true
+
+volumes:
+  ecommerce-back-local-data:
